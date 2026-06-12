@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RailBook — Train Ticket Booking</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg2: #0d1b2e;
+      --card: rgba(255,255,255,0.08);
+      --card2: rgba(255,255,255,0.12);
+      --text: #f4f8ff;
+      --muted: #b9c7df;
+      --accent: #6ee7ff;
+      --accent2: #7cdb8a;
+      --accent3: #ffb86b;
+      --shadow: 0 22px 60px rgba(0,0,0,0.35);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(110,231,255,0.16), transparent 30%),
+        radial-gradient(circle at top right, rgba(124,219,138,0.12), transparent 26%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    .container {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 28px 0 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      font-size: 1.15rem;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), #a8f3ff);
+      color: #06111f;
+      box-shadow: 0 12px 30px rgba(110,231,255,0.25);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .nav-links a:hover { color: white; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+
+    .headline h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 6vw, 4.9rem);
+      line-height: 0.96;
+      letter-spacing: -1.8px;
+    }
+
+    .headline h1 span {
+      color: transparent;
+      background: linear-gradient(90deg, #fff, var(--accent), #c3ffbf);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .headline p {
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 1.05rem;
+      margin: 16px 0 24px;
+      max-width: 640px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #dffcff);
+      color: #06111f;
+      box-shadow: 0 14px 30px rgba(110,231,255,0.18);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .banner {
+      min-height: 430px;
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+    }
+
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.06) contrast(1.03);
+    }
+
+    .banner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(4,10,18,0.08), rgba(4,10,18,0.82));
+    }
+
+    .banner-content {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      z-index: 1;
+      display: grid;
+      gap: 10px;
+    }
+
+    .pill-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(10px);
+      font-size: 0.82rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      padding: 18px 18px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow);
+    }
+
+    .stat strong { display: block; font-size: 1.4rem; margin-bottom: 6px; }
+    .stat span { color: var(--muted); font-size: 0.92rem; }
+
+    .section {
+      padding: 30px 0 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-header h2 { margin: 0; font-size: 1.8rem; }
+    .section-header p { margin: 0; color: var(--muted); max-width: 580px; }
+
+    .trains-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .train-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow);
+      border-radius: 26px;
+      overflow: hidden;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .train-card:hover {
+      transform: translateY(-5px);
+      background: var(--card2);
+    }
+
+    .train-image {
+      height: 230px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .train-image img { width: 100%; height: 100%; object-fit: cover; }
+
+    .fare-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0,0,0,0.58);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+    }
+
+    .train-body { padding: 18px; }
+
+    .train-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .train-title { margin: 0; font-size: 1.22rem; }
+    .train-meta { margin-top: 6px; color: var(--muted); font-size: 0.93rem; }
+
+    .details {
+      display: grid;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .detail-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      font-size: 0.94rem;
+    }
+
+    .timings {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .time-btn {
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .time-btn.active {
+      background: linear-gradient(135deg, var(--accent), #dffcff);
+      color: #06111f;
+      border-color: transparent;
+      font-weight: 900;
+    }
+
+    .class-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .class-chip {
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .class-chip.active {
+      background: linear-gradient(135deg, var(--accent2), #d7ffe0);
+      color: #06111f;
+      border-color: transparent;
+      font-weight: 900;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .card-actions .btn { flex: 1; padding: 12px 14px; }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .panel, .summary {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 22px;
+      backdrop-filter: blur(12px);
+    }
+
+    .panel h3, .summary h3 { margin: 0 0 10px; font-size: 1.25rem; }
+    .panel p, .summary p { color: var(--muted); line-height: 1.7; margin-top: 0; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: #e8eeff;
+    }
+
+    input, select {
+      width: 100%;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+      color: white;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(110,231,255,0.7);
+      box-shadow: 0 0 0 4px rgba(110,231,255,0.12);
+    }
+
+    .seat-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .seat {
+      aspect-ratio: 1;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .seat.selected {
+      background: linear-gradient(135deg, var(--accent3), #ffe6b8);
+      color: #241400;
+      border-color: transparent;
+    }
+
+    .summary-box {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .total {
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+
+    .footer {
+      padding: 30px 0 24px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid, .booking-layout { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .trains-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 720px) {
+      .nav { flex-direction: column; align-items: start; }
+      .section-header { flex-direction: column; align-items: start; }
+      .form-grid, .stats, .trains-grid { grid-template-columns: 1fr; }
+      .seat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .banner { min-height: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <nav class="nav">
+        <div class="brand">
+          <div class="brand-mark">🚆</div>
+          <div>RailBook</div>
+        </div>
+        <div class="nav-links">
+          <a href="#trains">Trains</a>
+          <a href="#book">Book Tickets</a>
+          <a href="#classes">Classes</a>
+        </div>
+      </nav>
+
+      <div class="hero-grid">
+        <div class="headline">
+          <h1>Book your <span>train journey</span> with ease.</h1>
+          <p>
+            Browse trains, compare timings, choose reservation classes, and reserve your seats through a clean and
+            responsive ticket booking interface.
+          </p>
+          <div class="cta-row">
+            <button class="btn btn-primary" onclick="document.getElementById('trains').scrollIntoView({behavior:'smooth'})">Explore Trains</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('book').scrollIntoView({behavior:'smooth'})">Book Now</button>
+          </div>
+        </div>
+
+        <div class="banner">
+          <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80" alt="Train at station" />
+          <div class="banner-content">
+            <div class="pill-row">
+              <div class="pill">✅ Instant confirmation</div>
+              <div class="pill">🪑 Class selection</div>
+              <div class="pill">📍 Station routing</div>
+            </div>
+            <div class="pill-row">
+              <div class="pill">⚡ Fast booking experience</div>
+              <div class="pill">🎫 Dynamic fare summary</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><strong>50+</strong><span>routes available daily</span></div>
+        <div class="stat"><strong>8</strong><span>reservation classes supported</span></div>
+        <div class="stat"><strong>₹120</strong><span>starting ticket price</span></div>
+        <div class="stat"><strong>4.8/5</strong><span>booking satisfaction score</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section" id="trains">
+      <div class="section-header">
+        <div>
+          <h2>Featured Trains</h2>
+          <p>Train names, stations, timings, and ticket fares all in one place.</p>
+        </div>
+      </div>
+
+      <div class="trains-grid">
+        <article class="train-card">
+          <div class="train-image">
+            <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80" alt="Express train" />
+            <div class="fare-badge">₹420</div>
+          </div>
+          <div class="train-body">
+            <div class="train-title-row">
+              <div>
+                <h3 class="train-title">Shatabdi Express</h3>
+                <div class="train-meta">New Delhi → Lucknow</div>
+              </div>
+            </div>
+            <div class="details">
+              <div class="detail-line"><span>Departure</span><strong>06:10 AM</strong></div>
+              <div class="detail-line"><span>Arrival</span><strong>11:20 AM</strong></div>
+              <div class="detail-line"><span>Stations</span><strong>NDLS • CNB • LKO</strong></div>
+            </div>
+            <div class="timings">
+              <button class="time-btn active" onclick="pickTiming(this, '06:10 AM')">06:10 AM</button>
+              <button class="time-btn" onclick="pickTiming(this, '01:30 PM')">01:30 PM</button>
+              <button class="time-btn" onclick="pickTiming(this, '06:40 PM')">06:40 PM</button>
+            </div>
+            <div class="class-row">
+              <button class="class-chip active" onclick="pickClass(this, 'Chair Car')">Chair Car</button>
+              <button class="class-chip" onclick="pickClass(this, 'Executive Chair Car')">Executive</button>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="chooseTrain('Shatabdi Express', 420, 'New Delhi → Lucknow')">Book Now</button>
+              <button class="btn btn-secondary" onclick="previewTrain('Shatabdi Express')">Details</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="train-card">
+          <div class="train-image">
+            <img src="https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=80" alt="Night train" />
+            <div class="fare-badge">₹860</div>
+          </div>
+          <div class="train-body">
+            <div class="train-title-row">
+              <div>
+                <h3 class="train-title">Rajdhani Express</h3>
+                <div class="train-meta">Mumbai CSMT → Ahmedabad</div>
+              </div>
+            </div>
+            <div class="details">
+              <div class="detail-line"><span>Departure</span><strong>09:45 PM</strong></div>
+              <div class="detail-line"><span>Arrival</span><strong>07:30 AM</strong></div>
+              <div class="detail-line"><span>Stations</span><strong>CSMT • BRC • ADI</strong></div>
+            </div>
+            <div class="timings">
+              <button class="time-btn" onclick="pickTiming(this, '09:45 PM')">09:45 PM</button>
+              <button class="time-btn active" onclick="pickTiming(this, '10:15 PM')">10:15 PM</button>
+              <button class="time-btn" onclick="pickTiming(this, '11:05 PM')">11:05 PM</button>
+            </div>
+            <div class="class-row">
+              <button class="class-chip active" onclick="pickClass(this, 'AC 2 Tier')">AC 2 Tier</button>
+              <button class="class-chip" onclick="pickClass(this, 'AC 3 Tier')">AC 3 Tier</button>
+              <button class="class-chip" onclick="pickClass(this, 'First AC')">First AC</button>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="chooseTrain('Rajdhani Express', 860, 'Mumbai CSMT → Ahmedabad')">Book Now</button>
+              <button class="btn btn-secondary" onclick="previewTrain('Rajdhani Express')">Details</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="train-card">
+          <div class="train-image">
+            <img src="https://images.unsplash.com/photo-1464219789935-c2d9d9aba541?auto=format&fit=crop&w=1200&q=80" alt="Railway station" />
+            <div class="fare-badge">₹260</div>
+          </div>
+          <div class="train-body">
+            <div class="train-title-row">
+              <div>
+                <h3 class="train-title">Intercity Express</h3>
+                <div class="train-meta">Bengaluru → Chennai</div>
+              </div>
+            </div>
+            <div class="details">
+              <div class="detail-line"><span>Departure</span><strong>07:25 AM</strong></div>
+              <div class="detail-line"><span>Arrival</span><strong>01:50 PM</strong></div>
+              <div class="detail-line"><span>Stations</span><strong>SBC • Katpadi • MAS</strong></div>
+            </div>
+            <div class="timings">
+              <button class="time-btn active" onclick="pickTiming(this, '07:25 AM')">07:25 AM</button>
+              <button class="time-btn" onclick="pickTiming(this, '02:10 PM')">02:10 PM</button>
+              <button class="time-btn" onclick="pickTiming(this, '08:05 PM')">08:05 PM</button>
+            </div>
+            <div class="class-row">
+              <button class="class-chip active" onclick="pickClass(this, 'Sleeper')">Sleeper</button>
+              <button class="class-chip" onclick="pickClass(this, 'AC Chair Car')">AC Chair</button>
+              <button class="class-chip" onclick="pickClass(this, 'General')">General</button>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="chooseTrain('Intercity Express', 260, 'Bengaluru → Chennai')">Book Now</button>
+              <button class="btn btn-secondary" onclick="previewTrain('Intercity Express')">Details</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="book">
+      <div class="section-header">
+        <div>
+          <h2>Booking Panel</h2>
+          <p>Customize your train, class, and seat count, then confirm your booking summary.</p>
+        </div>
+      </div>
+
+      <div class="booking-layout">
+        <div class="panel">
+          <h3>Journey Details</h3>
+          <p>Select a train above or edit the form below to configure your trip.</p>
+
+          <div class="form-grid">
+            <label>
+              Train Name
+              <input id="trainName" type="text" value="Shatabdi Express" />
+            </label>
+            <label>
+              Route / Stations
+              <input id="route" type="text" value="New Delhi → Lucknow" />
+            </label>
+            <label>
+              Show Timing
+              <select id="timing">
+                <option>06:10 AM</option>
+                <option>01:30 PM</option>
+                <option>06:40 PM</option>
+              </select>
+            </label>
+            <label>
+              Ticket Price
+              <input id="price" type="number" min="0" value="420" />
+            </label>
+            <label>
+              Reservation Class
+              <select id="reservationClass">
+                <option>Chair Car</option>
+                <option>Executive Chair Car</option>
+                <option>AC 2 Tier</option>
+                <option>AC 3 Tier</option>
+                <option>First AC</option>
+                <option>Sleeper</option>
+                <option>AC Chair Car</option>
+                <option>General</option>
+              </select>
+            </label>
+            <label>
+              Number of Tickets
+              <input id="count" type="number" min="1" max="12" value="2" />
+            </label>
+          </div>
+
+          <h3 style="margin-top:22px;">Select Seats</h3>
+          <p>Choose your preferred seats from the coach-style layout below.</p>
+          <div class="seat-grid" id="seatGrid"></div>
+        </div>
+
+        <div class="summary">
+          <h3>Your Booking Summary</h3>
+          <p>Review the route, timing, class, and selected seats before confirming.</p>
+
+          <div class="summary-box">
+            <div class="summary-line"><span>Train</span><strong id="sumTrain">Shatabdi Express</strong></div>
+            <div class="summary-line"><span>Route</span><strong id="sumRoute">New Delhi → Lucknow</strong></div>
+            <div class="summary-line"><span>Timing</span><strong id="sumTiming">06:10 AM</strong></div>
+            <div class="summary-line"><span>Class</span><strong id="sumClass">Chair Car</strong></div>
+            <div class="summary-line"><span>Seats Selected</span><strong id="sumSeats">0</strong></div>
+            <div class="summary-line"><span>Tickets</span><strong id="sumCount">2</strong></div>
+            <div class="summary-line total"><span>Total Fare</span><strong id="sumTotal">₹840</strong></div>
+          </div>
+
+          <div class="card-actions" style="margin-top:18px;">
+            <button class="btn btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+            <button class="btn btn-secondary" onclick="resetBooking()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="classes">
+      <div class="panel">
+        <h3>Reservation Classes</h3>
+        <p>
+          AC 1 Tier, AC 2 Tier, AC 3 Tier, AC Chair Car, Executive Chair Car, Sleeper, Second Sitting, and General.
+          You can easily expand this page to support more classes, live availability, or payment integration.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Built as a responsive train ticket booking interface with HTML, CSS, and JavaScript.
+  </footer>
+
+  <script>
+    const seatGrid = document.getElementById('seatGrid');
+    const trainName = document.getElementById('trainName');
+    const route = document.getElementById('route');
+    const timing = document.getElementById('timing');
+    const price = document.getElementById('price');
+    const reservationClass = document.getElementById('reservationClass');
+    const count = document.getElementById('count');
+
+    const sumTrain = document.getElementById('sumTrain');
+    const sumRoute = document.getElementById('sumRoute');
+    const sumTiming = document.getElementById('sumTiming');
+    const sumClass = document.getElementById('sumClass');
+    const sumSeats = document.getElementById('sumSeats');
+    const sumCount = document.getElementById('sumCount');
+    const sumTotal = document.getElementById('sumTotal');
+
+    let selectedSeats = [];
+
+    function buildSeats() {
+      const rows = ['A', 'B', 'C', 'D'];
+      const cols = [1,2,3,4,5,6,7,8];
+      seatGrid.innerHTML = '';
+      rows.forEach(row => {
+        cols.forEach(col => {
+          const seat = document.createElement('button');
+          seat.className = 'seat';
+          seat.textContent = row + col;
+          seat.onclick = () => toggleSeat(seat.textContent, seat);
+          seatGrid.appendChild(seat);
+        });
+      });
+    }
+
+    function toggleSeat(name, el) {
+      const i = selectedSeats.indexOf(name);
+      if (i >= 0) {
+        selectedSeats.splice(i, 1);
+        el.classList.remove('selected');
+      } else {
+        selectedSeats.push(name);
+        el.classList.add('selected');
+      }
+      updateSummary();
+    }
+
+    function pickTiming(btn, value) {
+      document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      timing.value = value;
+      updateSummary();
+    }
+
+    function pickClass(btn, value) {
+      document.querySelectorAll('.class-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      reservationClass.value = value;
+      updateSummary();
+    }
+
+    function chooseTrain(name, fare, routeText) {
+      trainName.value = name;
+      price.value = fare;
+      route.value = routeText;
+      sumTrain.textContent = name;
+      updateSummary();
+      document.getElementById('book').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function previewTrain(name) {
+      alert(`${name}\n\nOpen the booking panel to select seats, timing, and reservation class.`);
+    }
+
+    function updateSummary() {
+      const fare = Number(price.value || 0);
+      const ticketCount = Math.max(1, Number(count.value || 1));
+      const total = fare * ticketCount;
+
+      sumTrain.textContent = trainName.value || '—';
+      sumRoute.textContent = route.value || '—';
+      sumTiming.textContent = timing.value || '—';
+      sumClass.textContent = reservationClass.value || '—';
+      sumSeats.textContent = selectedSeats.length;
+      sumCount.textContent = ticketCount;
+      sumTotal.textContent = `₹${total.toLocaleString()}`;
+    }
+
+    function confirmBooking() {
+      alert(
+        `Booking confirmed!\n\nTrain: ${trainName.value}\nRoute: ${route.value}\nTiming: ${timing.value}\nClass: ${reservationClass.value}\nSeats: ${selectedSeats.length ? selectedSeats.join(', ') : 'Not selected'}`
+      );
+    }
+
+    function resetBooking() {
+      trainName.value = 'Shatabdi Express';
+      route.value = 'New Delhi → Lucknow';
+      timing.value = '06:10 AM';
+      price.value = 420;
+      reservationClass.value = 'Chair Car';
+      count.value = 2;
+      selectedSeats = [];
+      buildSeats();
+      updateSummary();
+    }
+
+    trainName.addEventListener('input', updateSummary);
+    route.addEventListener('input', updateSummary);
+    timing.addEventListener('change', updateSummary);
+    price.addEventListener('input', updateSummary);
+    reservationClass.addEventListener('change', updateSummary);
+    count.addEventListener('input', updateSummary);
+
+    buildSeats();
+    updateSummary();
+  </script>
+</body>
+</html>
